@@ -145,13 +145,10 @@ namespace adm {
     ADM_EXPORT void unset(detail::ParameterTraits<Rtime>::tag);
     ADM_EXPORT void unset(detail::ParameterTraits<Duration>::tag);
     ADM_EXPORT void unset(detail::ParameterTraits<Order>::tag);
-<<<<<<< HEAD
-
-=======
     ADM_EXPORT void unset(detail::ParameterTraits<Degree>::tag);
     ADM_EXPORT void unset(detail::ParameterTraits<NfcRefDist>::tag);
     ADM_EXPORT void unset(detail::ParameterTraits<ScreenRef>::tag);
->>>>>>> e5c4b9f4462cccdc8253d4a3223d23b012f46315
+
     AudioBlockFormatId id_;
     boost::optional<Rtime> rtime_;
     boost::optional<Duration> duration_;
