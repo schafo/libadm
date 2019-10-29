@@ -411,6 +411,33 @@ As the idea of the common definitions is, that those ADM elements don't need to
 be written, even though we added common definition ADM elements to our document
 the XML writer does not write them.
 
+Using common definition with HOA or binaural types will however work slightly differently as we can't use `createSimpleObject::create()`. Instead, we will manually add the elements required.
+
+.. code-block:: cpp
+
+    auto admDocument = adm::Document::create();
+
+    auto commonDefDoc = adm::getCommonDefinitions();
+    adm::deepCopyTo(commonDefDoc, admDocument);
+
+    auto audioProgramme = adm::AudioProgramme::create(adm::AudioProgrammeName{"HOA_Programme"});
+    auto audioContent = adm::AudioContent::create(adm::AudioContentName{"HOA_Content"});
+    auto audioObject = adm::AudioObject::create(adm::AudioObjectName{"HOA_Object"});
+    auto trackUId = adm::AudioTrackUid::create();
+    
+    auto audioPackFormat_ptr = admDocument->lookup(adm::parseAudioPackFormatId("AP_00040001"));
+    auto audioChannelFormat_ptr = admDocument->lookup(adm::parseAudioChannelFormatId("AC_00040001"));
+    auto audioTrackFormat_ptr = admDocument->lookup(adm::parseAudioTrackFormatId("AT_00040010_01"));
+
+    audioProgramme->addReference(audioContent);
+    audioContent->addReference(audioObject);
+    audioObject->addReference(audioPackFormat_ptr);
+
+    trackUId->setReference(audioPackFormat_ptr);
+    trackUId->setReference(audioTrackFormat_ptr);
+
+    admDocument->add(audioProgramme);
+
 Setting  block format durations
 -------------------------------
 
