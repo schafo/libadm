@@ -63,10 +63,10 @@ namespace adm {
         void unset();
 
         // ---- Inherited functions ---- //
-        ADM_EXPORT using AudioPackFormat::set;
-        ADM_EXPORT using AudioPackFormat::get;
-        ADM_EXPORT using AudioPackFormat::has;
-        ADM_EXPORT using AudioPackFormat::unset;
+        using AudioPackFormat::set;
+        using AudioPackFormat::get;
+        using AudioPackFormat::has;
+        using AudioPackFormat::unset;
 
         /**
          * @brief Print overview to ostream
