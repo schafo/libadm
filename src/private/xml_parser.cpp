@@ -2,7 +2,7 @@
 #include "adm/common_definitions.hpp"
 #include "adm/private/xml_parser_helper.hpp"
 #include "adm/errors.hpp"
-
+#include "adm/elements/audio_pack_format_hoa.hpp"
 namespace adm {
   namespace xml {
 
@@ -49,8 +49,10 @@ namespace adm {
             document_->add(parseAudioObject(node));
           } else if (std::string(node->name()) == "audioTrackUID") {
             document_->add(parseAudioTrackUid(node));
+          } else if (std::string(node->name()) == "audioPackFormat" && isHoa(node)) {
+            document_->add(parseAudioPackFormatHoa(node));
           } else if (std::string(node->name()) == "audioPackFormat") {
-            document_->add(parseAudioPackFormat(node));
+              document_->add(parseAudioPackFormat(node));
           } else if (std::string(node->name()) == "audioChannelFormat") {
             document_->add(parseAudioChannelFormat(node));
           } else if (std::string(node->name()) == "audioStreamFormat") {
@@ -268,19 +270,47 @@ namespace adm {
       if(document_->lookup(id) != nullptr) {
         throw error::XmlParsingDuplicateId(formatId(id), getDocumentLine(node));
       }
-      auto audioPackFormat = AudioPackFormat::create(name, id.get<TypeDescriptor>(), id);
+      auto typeDescriptor = id.get<TypeDescriptor>();
+        auto audioPackFormat = AudioPackFormat::create(name, typeDescriptor, id);
 
-      auto typeLabel = parseOptionalAttribute<TypeDescriptor>(node, "typeLabel", &parseTypeLabel);
-      auto typeDefinition = parseOptionalAttribute<TypeDescriptor>(node, "typeDefinition", &parseTypeDefinition);
-      checkChannelType(id, typeLabel, typeDefinition);
+        auto typeLabel = parseOptionalAttribute<TypeDescriptor>(node, "typeLabel", &parseTypeLabel);
+        auto typeDefinition = parseOptionalAttribute<TypeDescriptor>(node, "typeDefinition", &parseTypeDefinition);
+        checkChannelType(id, typeLabel, typeDefinition);
 
-      setOptionalAttribute<Importance>(node, "importance", audioPackFormat);
-      setOptionalAttribute<AbsoluteDistance>(node, "absoluteDistance", audioPackFormat);
+        setOptionalAttribute<Importance>(node, "importance", audioPackFormat);
+        setOptionalAttribute<AbsoluteDistance>(node, "absoluteDistance", audioPackFormat);
 
-      addOptionalReferences<AudioChannelFormatId>(node, "audioChannelFormatIDRef", audioPackFormat, packFormatChannelFormatRefs_, &parseAudioChannelFormatId);
-      addOptionalReferences<AudioPackFormatId>(node, "audioPackFormatIDRef", audioPackFormat, packFormatPackFormatRefs_, &parseAudioPackFormatId);
-      // clang-format on
-      return audioPackFormat;
+        addOptionalReferences<AudioChannelFormatId>(node, "audioChannelFormatIDRef", audioPackFormat, packFormatChannelFormatRefs_, &parseAudioChannelFormatId);
+        addOptionalReferences<AudioPackFormatId>(node, "audioPackFormatIDRef", audioPackFormat, packFormatPackFormatRefs_, &parseAudioPackFormatId);
+        // clang-format on
+        return audioPackFormat;
+      }
+
+    std::shared_ptr<AudioPackFormatHoa> XmlParser::parseAudioPackFormatHoa(
+            NodePtr node){
+          // clang-format off
+        auto name = parseAttribute<AudioPackFormatName>(node, "audioPackFormatName");
+        auto id = parseAttribute<AudioPackFormatId>(node, "audioPackFormatID", &parseAudioPackFormatId);
+      if(document_->lookup(id) != nullptr) {
+        throw error::XmlParsingDuplicateId(formatId(id), getDocumentLine(node));
+      }
+      auto typeDescriptor = id.get<TypeDescriptor>();
+      auto audioPackFormat = AudioPackFormatHoa::create(name, typeDescriptor, id);
+
+        auto typeLabel = parseOptionalAttribute<TypeDescriptor>(node, "typeLabel", &parseTypeLabel);
+        auto typeDefinition = parseOptionalAttribute<TypeDescriptor>(node, "typeDefinition", &parseTypeDefinition);
+        checkChannelType(id, typeLabel, typeDefinition);
+
+        setOptionalAttribute<Importance>(node, "importance", audioPackFormat);
+        setOptionalAttribute<AbsoluteDistance>(node, "absoluteDistance", audioPackFormat);
+        setOptionalAttribute<Normalization>(node, "normalization", audioPackFormat);
+        setOptionalAttribute<ScreenRef>(node, "screenRef", audioPackFormat);
+        setOptionalAttribute<NfcRefDist>(node, "nfcRefDist", audioPackFormat);
+
+        addOptionalReferences<AudioChannelFormatId>(node, "audioChannelFormatIDRef", audioPackFormat, packFormatChannelFormatRefs_, &parseAudioChannelFormatId);
+        addOptionalReferences<AudioPackFormatId>(node, "audioPackFormatIDRef", audioPackFormat, packFormatPackFormatRefs_, &parseAudioPackFormatId);
+        // clang-format on
+        return audioPackFormat;
     }
 
     std::shared_ptr<AudioChannelFormat> XmlParser::parseAudioChannelFormat(
@@ -630,6 +660,12 @@ namespace adm {
       setOptionalElement<Equation>(node, "equation", audioBlockFormat);
       // clang-format on
       return audioBlockFormat;
+    }
+
+    bool isHoa(NodePtr node){
+        auto id = parseAttribute<AudioPackFormatId>(node, "audioPackFormatID", &parseAudioPackFormatId);
+        auto typeDescriptor = id.get<TypeDescriptor>();
+        return typeDescriptor == adm::TypeDefinition::HOA;
     }
 
   }  // namespace xml

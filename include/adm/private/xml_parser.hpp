@@ -10,6 +10,7 @@
 #include "adm/parse.hpp"
 #include "rapidxml/rapidxml.hpp"
 #include "rapidxml/rapidxml_utils.hpp"
+#include "adm/elements/audio_pack_format_hoa.hpp"
 
 namespace adm {
   /**
@@ -49,7 +50,8 @@ namespace adm {
 
     NodePtr findAudioFormatExtendedNodeEbuCore(NodePtr root);
     NodePtr findAudioFormatExtendedNodeFullRecursive(NodePtr root);
-
+    typedef boost::variant<std::shared_ptr<AudioPackFormat>, std::shared_ptr<AudioPackFormatHoa>> ParseAudioPackFormatResult;
+    bool isHoa(NodePtr node);
     class XmlParser {
      public:
       XmlParser(const std::string& filename,
@@ -70,6 +72,7 @@ namespace adm {
       std::shared_ptr<AudioTrackFormat> parseAudioTrackFormat(NodePtr node);
       std::shared_ptr<AudioStreamFormat> parseAudioStreamFormat(NodePtr node);
       std::shared_ptr<AudioPackFormat> parseAudioPackFormat(NodePtr node);
+      std::shared_ptr<AudioPackFormatHoa> parseAudioPackFormatHoa(NodePtr node);
       std::shared_ptr<AudioTrackUid> parseAudioTrackUid(NodePtr node);
       std::shared_ptr<AudioChannelFormat> parseAudioChannelFormat(NodePtr node);
 
