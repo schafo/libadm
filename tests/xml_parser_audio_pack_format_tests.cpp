@@ -6,6 +6,7 @@
 #include "adm/parse.hpp"
 #include "adm/errors.hpp"
 
+
 TEST_CASE("xml_parser/audio_pack_format") {
   using namespace adm;
   auto document = parseXml("../test_data/xml_parser/audio_pack_format.xml");
@@ -30,19 +31,17 @@ TEST_CASE("xml_parser/audio_pack_format_duplicate_id") {
       adm::error::XmlParsingDuplicateId);
 }
 
+
 TEST_CASE("xml_parser/audio_pack_format_hoa") {
   using namespace adm;
-  std::shared_ptr<adm::AudioPackFormatHoa> audioPackFormatHoa;
   auto document = parseXml("../test_data/xml_parser/audio_pack_format_hoa.xml");
-  auto audioPackFormatHoa2 =
+  auto audioPackFormatGeneric =
       document->lookup(parseAudioPackFormatId("AP_00041001"));
+
+  std::shared_ptr<adm::AudioPackFormatHoa> audioPackFormatHoa = std::dynamic_pointer_cast<AudioPackFormatHoa>(audioPackFormatGeneric);
 
   REQUIRE(audioPackFormatHoa->has<AudioPackFormatId>() == true);
   REQUIRE(audioPackFormatHoa->has<AudioPackFormatName>() == true);
-//  REQUIRE(audioPackFormatHoa->has<Normalization>() == true);
-//  REQUIRE(audioPackFormatHoa->has<ScreenRef>() == true);
-//  REQUIRE(audioPackFormatHoa->has<NfcRefDist>() == true);
-
   REQUIRE(
       audioPackFormatHoa->get<AudioPackFormatId>().get<AudioPackFormatIdValue>() ==
       0x1001u);
@@ -50,8 +49,14 @@ TEST_CASE("xml_parser/audio_pack_format_hoa") {
           TypeDefinition::HOA);
   REQUIRE(audioPackFormatHoa->get<AudioPackFormatName>() == "MyPackFormat");
   REQUIRE(audioPackFormatHoa->get<Importance>() == 10);
-//  REQUIRE(audioPackFormatHoa->get<Normalization>() == "N3D");
-//  REQUIRE(audioPackFormatHoa->get<ScreenRef>() == true);
-//  REQUIRE(audioPackFormatHoa->get<NfcRefDist>() == 2);
 
+  if(audioPackFormatHoa) {
+      REQUIRE(audioPackFormatHoa->has<Normalization>() == true);
+      REQUIRE(audioPackFormatHoa->has<ScreenRef>() == true);
+      REQUIRE(audioPackFormatHoa->has<NfcRefDist>() == true);
+      REQUIRE(audioPackFormatHoa->get<Normalization>() == "N3D");
+      REQUIRE(audioPackFormatHoa->get<ScreenRef>() == true);
+      REQUIRE(audioPackFormatHoa->get<NfcRefDist>() == 2);
+  }
 }
+
