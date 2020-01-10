@@ -38,7 +38,8 @@ TEST_CASE("xml_parser/audio_pack_format_hoa") {
   auto audioPackFormatGeneric =
       document->lookup(parseAudioPackFormatId("AP_00041001"));
 
-  std::shared_ptr<adm::AudioPackFormatHoa> audioPackFormatHoa = std::dynamic_pointer_cast<AudioPackFormatHoa>(audioPackFormatGeneric);
+  std::shared_ptr<adm::AudioPackFormatHoa> audioPackFormatHoa =
+      std::dynamic_pointer_cast<AudioPackFormatHoa>(audioPackFormatGeneric);
 
   REQUIRE(audioPackFormatHoa->has<AudioPackFormatId>() == true);
   REQUIRE(audioPackFormatHoa->has<AudioPackFormatName>() == true);
