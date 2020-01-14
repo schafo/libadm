@@ -2,7 +2,6 @@
 #include "adm/common_definitions.hpp"
 #include "adm/private/xml_parser_helper.hpp"
 #include "adm/errors.hpp"
-#include "adm/elements/audio_pack_format_hoa.hpp"
 namespace adm {
   namespace xml {
 
